@@ -1,34 +1,55 @@
 import urllib2
 import urllib
+import base64
 import time
 import hashlib
 import hmac
 import json
 
 class WLOXAPI:
-   def __init__(self, api_key, api_secret, api_uri='https://beta.isx.is/api/'):
+   def __init__(self, api_key, api_secret, api_uri='https://isx.is/api/'):
       self.api_key = api_key
       self.api_secret = api_secret
       self.api_uri = api_uri
 
    def query(self, method, params={}, private=True):
       # Headers
-      headers = {'User-Agent': "Py-WLOX-API"}
+      headers = {'User-Agent': "Py-WLOX-API", 'Content-Type': 'application/json;charset=utf-8'}
 
       if private:
-         params['api_key'] = self.api_key
-         params['nonce'] = time.time()
+         nonce = str(int(time.time() * 1000))
+
+         # Construct the params JSON string.
+         # First obtain the params keys
+         params_idx = []
+         for key in params.keys():
+            params_idx.append(key)
+ 
+         # Construct the string
+         data_str = '"nonce":'+nonce+',"api_key":"'+self.api_key+'"'
+         for key in params_idx:
+            if key is 'limit':
+               # limit is a numerical value, don't quote it.
+               data_str = data_str + ',"' + str(key) + '":' + str(params[key])
+            else:
+               data_str = data_str + ',"' + str(key) + '":"' + str(params[key]) + '"'
+
+         json_str  = '{' + data_str + '}'
+         json_str = json_str.encode("utf-8")
+         json_base64 = base64.b64encode(json_str)
+         #print(json_str)
+         #print(json_base64)
 
          # create the signature
-         message = bytes(json.dumps(params)).encode('utf-8')
-         secret = bytes(self.api_secret).encode('utf-8')
-         signature = hmac.new(secret, message, digestmod=hashlib.sha256).hexdigest()
+         signature = hmac.new(self.api_secret, json_base64, digestmod=hashlib.sha256).hexdigest()
 
          # add signature to request parameters
-         params['signature'] = signature
+         data_str = data_str + ',"signature":"' + signature + '"'
+         json_str  = '{' + data_str + '}'
+         json_str = json_str.encode("utf-8")
+         #print(json_str)
 
          # params are passed as POST vars to the server
-         params = urllib.urlencode(params)
          method_uri = self.api_uri + method
       else:
          # params are passed as GET vars to the server
@@ -36,7 +57,7 @@ class WLOXAPI:
          method_uri = self.api_uri +  method + '?' + params
 
       if private:
-         req = urllib2.Request(method_uri, params, headers=headers)
+         req = urllib2.Request(method_uri, json_str, headers=headers)
       else:
          req = urllib2.Request(method_uri, headers=headers)
       self.res = urllib2.urlopen(req)
