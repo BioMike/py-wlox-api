@@ -41,3 +41,21 @@ data = isx.user_transactions()
 print("Private API call user-transactions:")
 print(data)
 print("\n")
+
+data = isx.crypto_deposit_address_get()
+print("Private API call crypto-deposit-address/get:")
+print(data)
+print("\n")
+
+data = isx.crypto_deposit_address_new()
+print("Private API call crypto-deposit-address/new:")
+print(data)
+print("\n")
+
+data = isx.deposits_get()
+print("Private API call deposits/get:")
+print(data)
+print("\n")
+
+
+

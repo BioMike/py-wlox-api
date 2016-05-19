@@ -37,8 +37,6 @@ class WLOXAPI:
          json_str  = '{' + data_str + '}'
          json_str = json_str.encode("utf-8")
          json_base64 = base64.b64encode(json_str)
-         #print(json_str)
-         #print(json_base64)
 
          # create the signature
          signature = hmac.new(self.api_secret, json_base64, digestmod=hashlib.sha256).hexdigest()
@@ -47,7 +45,6 @@ class WLOXAPI:
          data_str = data_str + ',"signature":"' + signature + '"'
          json_str  = '{' + data_str + '}'
          json_str = json_str.encode("utf-8")
-         #print(json_str)
 
          # params are passed as POST vars to the server
          method_uri = self.api_uri + method
@@ -107,6 +104,25 @@ class WLOXAPI:
       params = {'market': market, 'currency': currency, 'limit': limit, 'side': side}
       result = self.query(method, params, private=True)
       return(result)
+
+   def crypto_deposit_address_get(self, market='aur', limit=1):
+      method = 'crypto-deposit-address/get'
+      params = {'market': market, 'limit': limit}
+      result = self.query(method, params, private=True)
+      return(result)
+
+   def crypto_deposit_address_new(self, market='aur'):
+      method = 'crypto-deposit-address/new'
+      params = {'market': market}
+      result = self.query(method, params, private=True)
+      return(result)
+
+   def deposits_get(self, currency='aur', limit=1, status='completed'):
+      method = 'deposits/get'
+      params = {'currency': currency, 'limit': limit, 'status': status}
+      result = self.query(method, params, private=True)
+      return(result)
+
 
    def decode_json(self, json_str):
       try:
