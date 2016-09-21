@@ -1,3 +1,19 @@
+#  Python library to access WLOX-based cryptocurrency exchanges.
+#  Copyright (C) 2016  Myckel Habets
+
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import urllib2
 import urllib
 import base64
@@ -123,6 +139,46 @@ class WLOXAPI:
       result = self.query(method, params, private=True)
       return(result)
 
+   def withdrawals_get(self, currency='aur', limit=1, status='completed'):
+      method = 'withdrawals/get'
+      params = {'currency': currency, 'limit': limit, 'status': status}
+      result = self.query(method, params, private=True)
+      return(result)
+
+   def withdrawals_new(self, amount='0.00', address):
+      # TODO: add fiat withdrawals
+      method = 'withdrawals/new'
+      currency = 'aur'
+      params = {'currency': currency, 'amount': amount, 'address': address}
+      result = self.query(method, params, private=True)
+      return(result)
+
+   def orders_new(self, market='aur', currency='isk', side, ordertype='limit', limit_price='0.00', stop_price='0.00', amount='0.00'):
+      method = 'orders/new'
+      params = {'market': market, 'currency': currency, 'side': side, 'type': ordertype, 'limit_price': limit_price, 'stop_price': stop_price, 'amount': amount}
+      result = self.query(method, params, private=True)
+      return(result)
+
+   def orders_edit(self, orderid, ordertype, limit_price, stop_price, amount):
+      method = 'orders/edit'
+      params = {'id': orderid, 'type': ordertype, 'limit_price': limit_price, 'stop_price': stop_price, 'amount': amount}
+      result = self.query(method, params, private=True)
+      return(result)
+
+   def orders_cancel(self, orderid):
+      method = 'orders/cancel'
+      if orderid is 'all':
+         params = {'all': '1'}
+      else:
+         params = {'id': orderid}
+      result = self.query(method, params, private=True)
+      return(result)
+
+   def orders_status(self, orderid):
+      method = 'orders/status'
+      params = {'id': orderid}
+      result = self.query(method, params, private=True)
+      return(result)
 
    def decode_json(self, json_str):
       try:
