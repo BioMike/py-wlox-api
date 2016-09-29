@@ -145,7 +145,7 @@ class WLOXAPI:
       result = self.query(method, params, private=True)
       return(result)
 
-   def withdrawals_new(self, amount='0.00', address):
+   def withdrawals_new(self, address, amount='0.00'):
       # TODO: add fiat withdrawals
       method = 'withdrawals/new'
       currency = 'aur'
@@ -153,7 +153,7 @@ class WLOXAPI:
       result = self.query(method, params, private=True)
       return(result)
 
-   def orders_new(self, market='aur', currency='isk', side, ordertype='limit', limit_price='0.00', stop_price='0.00', amount='0.00'):
+   def orders_new(self, market='aur', currency='isk', side='buy', ordertype='limit', limit_price='0.00', stop_price='0.00', amount='0.00'):
       method = 'orders/new'
       params = {'market': market, 'currency': currency, 'side': side, 'type': ordertype, 'limit_price': limit_price, 'stop_price': stop_price, 'amount': amount}
       result = self.query(method, params, private=True)
